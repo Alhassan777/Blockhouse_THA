@@ -14,7 +14,7 @@ from os import getenv
 DATABASE_URL = getenv("DATABASE_URL", "sqlite:///./orders.db")
 
 # Create SQLAlchemy engine with the configured database URL
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 
 # Create sessionmaker factory for database sessions
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
