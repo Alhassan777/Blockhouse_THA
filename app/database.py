@@ -10,17 +10,15 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from os import getenv
 
-# Get database URL from environment variable or use SQLite as default
 DATABASE_URL = getenv("DATABASE_URL", "sqlite:///./orders.db")
 
-# Create SQLAlchemy engine with the configured database URL
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+# Only use 'connect_args' if the database is SQLite
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
-# Create sessionmaker factory for database sessions
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Create base class for SQLAlchemy models
 Base = declarative_base()
+
 
 def get_db():
     """FastAPI dependency for database session management.
