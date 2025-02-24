@@ -1,6 +1,6 @@
-fastapi==0.68.0
-uvicorn==0.15.0
-pydantic==1.6.2
+fastapi==0.109.2
+uvicorn==0.27.1
+pydantic==1.10.13
 sqlalchemy==1.4.0
 psycopg2-binary==2.9.1
 websockets==10.0
@@ -9,4 +9,4 @@ passlib==1.7.4
 python-jose==3.3.0
 alembic==1.7.4
 pytest==6.2.5
-httpx==0.18.2
+httpx==0.24.1
