@@ -87,5 +87,5 @@ jobs:
             # and pass in the DATABASE_URL environment variable
             docker run -d --name trade-orders-api \
               -p 8000:8000 \
-              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-              ${{ steps.login-ecr.outputs.registry }}/trade-orders-api:${{ github.sha }}
+              -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+              "${{ steps.login-ecr.outputs.registry }}/trade-orders-api:${{ github.sha }}"
