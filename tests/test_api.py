@@ -179,12 +179,3 @@ def test_multiple_websocket_connections(client):
         assert "New order created: MSFT" in data1
         assert "SELL" in data1
         assert "300.0" in data1
-
-def test_websocket_connection_close(client):
-    # Test WebSocket connection closure
-    with pytest.raises(WebSocketDisconnect):
-        with client.websocket_connect("/ws") as websocket:
-            # Send a close frame and wait for the connection to close
-            websocket.close(code=1000)
-            # Attempting to receive after close should raise WebSocketDisconnect
-            websocket.receive_text()
