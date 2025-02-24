@@ -83,9 +83,20 @@ def test_get_nonexistent_order(client):
     assert response.json()["detail"] == "Order not found"
 
 def test_websocket_connection(client):
-    # Test WebSocket connection
+    # Test WebSocket connection and order notifications
     with client.websocket_connect("/ws") as websocket:
-        # Test sending and receiving a message
-        websocket.send_text("Test message")
+        # Create a new order to trigger WebSocket notification
+        order_data = {
+            "symbol": "TSLA",
+            "price": 900.00,
+            "quantity": 75,
+            "order_type": "BUY"
+        }
+        response = client.post("/orders", json=order_data)
+        assert response.status_code == 200
+        
+        # Verify WebSocket receives the order notification
         data = websocket.receive_text()
-        assert "Order update: Test message" in data
+        assert "New order created: TSLA" in data
+        assert "BUY" in data
+        assert "900.0" in data
