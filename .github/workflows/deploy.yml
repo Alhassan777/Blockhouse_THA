@@ -68,10 +68,11 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key_path: ./ec2-key.pem
           script: |
+            echo "✅ Connected to EC2!"
             docker pull ${{ steps.login-ecr.outputs.registry }}/trade-orders-api:${{ github.sha }}
-            docker stop trade-api || true
-            docker rm trade-api || true
-            docker run -d --name trade-api \
+            docker stop trade-orders-api || true
+            docker rm trade-orders-api || true
+            docker run -d --name trade-orders-api \
               -p 8000:8000 \
               -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
               ${{ steps.login-ecr.outputs.registry }}/trade-orders-api:${{ github.sha }}
