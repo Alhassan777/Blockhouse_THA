@@ -1,0 +1,8 @@
+.openapi-generator-ignore
+Apis/DefaultApi.md
+Models/HTTPValidationError.md
+Models/Order.md
+Models/OrderCreate.md
+Models/OrderType.md
+Models/ValidationError.md
+README.md

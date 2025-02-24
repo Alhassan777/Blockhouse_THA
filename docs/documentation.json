@@ -1,0 +1,286 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+      "title": "Trade Orders API",
+      "description": "A REST API for handling trade orders with real-time updates",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/": {
+        "get": {
+          "summary": "Root",
+          "description": "Root endpoint that returns a welcome message.\n\nReturns:\n    dict: A welcome message for the API",
+          "operationId": "root__get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/orders": {
+        "get": {
+          "summary": "Get Trade Orders",
+          "description": "Retrieve a list of trade orders with pagination.\n\nArgs:\n    skip (int): Number of records to skip\n    limit (int): Maximum number of records to return\n    db (Session): The database session\n\nReturns:\n    List[models.Order]: List of orders",
+          "operationId": "get_trade_orders_orders_get",
+          "parameters": [
+            {
+              "required": false,
+              "schema": {
+                "title": "Skip",
+                "type": "integer",
+                "default": 0
+              },
+              "name": "skip",
+              "in": "query"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Limit",
+                "type": "integer",
+                "default": 100
+              },
+              "name": "limit",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "title": "Response Get Trade Orders Orders Get",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Order"
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "summary": "Create Trade Order",
+          "description": "Create a new trade order and broadcast a notification.\n\nArgs:\n    order (schemas.OrderCreate): The order data to create\n    db (Session): The database session\n\nReturns:\n    models.Order: The created order",
+          "operationId": "create_trade_order_orders_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Order"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/orders/{order_id}": {
+        "get": {
+          "summary": "Get Trade Order",
+          "description": "Retrieve a specific trade order by ID.\n\nArgs:\n    order_id (int): The ID of the order to retrieve\n    db (Session): The database session\n\nReturns:\n    models.Order: The requested order\n\nRaises:\n    HTTPException: If the order is not found",
+          "operationId": "get_trade_order_orders__order_id__get",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Order Id",
+                "type": "integer"
+              },
+              "name": "order_id",
+              "in": "path"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Order"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "HTTPValidationError": {
+          "title": "HTTPValidationError",
+          "type": "object",
+          "properties": {
+            "detail": {
+              "title": "Detail",
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ValidationError"
+              }
+            }
+          }
+        },
+        "Order": {
+          "title": "Order",
+          "required": [
+            "symbol",
+            "price",
+            "quantity",
+            "order_type",
+            "id",
+            "created_at"
+          ],
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "title": "Symbol",
+              "type": "string"
+            },
+            "price": {
+              "title": "Price",
+              "type": "number"
+            },
+            "quantity": {
+              "title": "Quantity",
+              "type": "integer"
+            },
+            "order_type": {
+              "$ref": "#/components/schemas/OrderType"
+            },
+            "id": {
+              "title": "Id",
+              "type": "integer"
+            },
+            "created_at": {
+              "title": "Created At",
+              "type": "string",
+              "format": "date-time"
+            },
+            "updated_at": {
+              "title": "Updated At",
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "description": "Pydantic model for complete order information.\n\nExtends the base order model with additional fields that are present\nin the database but not required for order creation.\n\nAttributes:\n    id (int): The unique identifier for the order\n    created_at (datetime): The timestamp when the order was created\n    updated_at (Optional[datetime]): The timestamp when the order was last updated"
+        },
+        "OrderCreate": {
+          "title": "OrderCreate",
+          "required": [
+            "symbol",
+            "price",
+            "quantity",
+            "order_type"
+          ],
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "title": "Symbol",
+              "type": "string"
+            },
+            "price": {
+              "title": "Price",
+              "type": "number"
+            },
+            "quantity": {
+              "title": "Quantity",
+              "type": "integer"
+            },
+            "order_type": {
+              "$ref": "#/components/schemas/OrderType"
+            }
+          },
+          "description": "Pydantic model for creating new orders.\n\nInherits all fields from OrderBase without adding any additional fields.\nUsed for validating incoming order creation requests."
+        },
+        "OrderType": {
+          "title": "OrderType",
+          "enum": [
+            "BUY",
+            "SELL"
+          ],
+          "type": "string",
+          "description": "Enumeration for order types.\n\nDefines the possible types of trading orders in the system.\nCurrently supports BUY and SELL orders."
+        },
+        "ValidationError": {
+          "title": "ValidationError",
+          "required": [
+            "loc",
+            "msg",
+            "type"
+          ],
+          "type": "object",
+          "properties": {
+            "loc": {
+              "title": "Location",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "msg": {
+              "title": "Message",
+              "type": "string"
+            },
+            "type": {
+              "title": "Error Type",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+  
